@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinMemberConfigItemMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinMemberConfigPrice" id="MemberConfigPrice">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="describe"/>
+    </resultMap>
+
+    <sql id="selectMoyinMemberItemVo">
+        select id, `name`, `describe`, header_image
+        from moyin_member_config_item
+    </sql>
+
+    <insert id="addItem" parameterType="com.moyin.tts.domain.MoyinMemberConfigItem">
+        insert moyin_member_config_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">`name`,</if>
+            <if test="describe != null">`price`,</if>
+            <if test="headerImage != null">header_image,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="describe != null">#{describe},</if>
+            <if test="headerImage != null">#{headerImage},</if>
+        </trim>
+    </insert>
+
+    <update id="editItem" parameterType="com.moyin.tts.domain.MoyinMemberConfigItem">
+        update moyin_member_config_item
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="describe != null">price = #{describe},</if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteItem">
+        delete
+        from moyin_member_config_item
+        where id = #{id}
+    </delete>
+
+
+    <select id="listItem" parameterType="Long" resultMap="MemberConfigPrice">
+        <include refid="selectMoyinMemberItemVo"/>
+    </select>
+
+</mapper>

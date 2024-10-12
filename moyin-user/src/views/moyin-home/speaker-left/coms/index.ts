@@ -1,0 +1,8 @@
+export { default as SpeakerTagList } from './tag-list.vue'
+export { default as SpeakerAvatarList } from './speaker-avatar-list.vue'
+export { default as SpeakerInfoDetail } from './speaker-info-detail.vue'
+export { default as SpeakerSearch } from './search.vue'
+export { default as SimpleTag } from './simple-tag.vue'
+export { default as SpeakerAvatar } from './speaker-avatar.vue'
+export { default as PlayButton } from './play-button.vue'
+export { default as StyleAvatar } from './style-avatar.vue'

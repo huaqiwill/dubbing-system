@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinMemberCollectMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinMemberCollect" id="CollectResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="speakerId" column="speaker_id"/>
+        <result property="speakerName" column="speaker_name"/>
+        <result property="speakerNotes" column="speaker_notes"/>
+    </resultMap>
+
+    <sql id="selectCollectVo">
+        select c.id            as id,
+               c.user_id       as user_id,
+               u.user_name     as user_name,
+               c.speaker_id    as speaker_id,
+               s.name          as speaker_name,
+               c.speaker_notes as speaker_notes
+        from moyin_member_collect_speaker c
+                 left join sys_user u on u.user_id = c.user_id
+                 left join moyin_speaker s on s.id = c.speaker_id
+    </sql>
+
+    <insert id="collectSpeakerAdd">
+        insert into moyin_member_collect_speaker
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="speakerId != null">speaker_id,</if>
+            <if test="speakerNotes != null">speaker_notes,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="speakerId != null">#{speakerId},</if>
+            <if test="speakerNotes != null">#{speakerNotes},</if>
+        </trim>
+    </insert>
+
+
+    <update id="collectSpeakerEdit">
+        update moyin_member_collect_speaker
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="speakerId != null">speaker_id = #{speakerId},</if>
+            <if test="speakerNotes != null">speaker_notes = #{speakerNotes},</if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="collectSpeakerRemoveById" parameterType="Long">
+        delete
+        from moyin_member_collect_speaker
+        where id = #{id}
+    </delete>
+
+    <delete id="collectSpeakerRemoveBySpeakerId">
+        delete
+        from moyin_member_collect_speaker
+        where speaker_id = #{speakerId}
+          and user_id = #{userId}
+    </delete>
+
+    <select id="selectById" parameterType="Long" resultMap="CollectResult">
+        <include refid="selectCollectVo"/>
+        where m.id = #{id}
+    </select>
+
+    <select id="collectSpeakerList" resultMap="CollectResult">
+        <include refid="selectCollectVo"/>
+        <where>
+            <if test="speakerName">and s.name like concat('%',#{speakerName},'%')</if>
+            <if test="userName">and u.user_name like concat('%',#{userName},'%')</if>
+            <if test="speakerNotes">and c.speaker_notes like concat('%',#{speakerNotes},'%')</if>
+        </where>
+    </select>
+
+    <select id="collectSpeakerDetail" resultMap="CollectResult">
+        <include refid="selectCollectVo"/>
+        where c.id = #{id}
+    </select>
+
+</mapper>

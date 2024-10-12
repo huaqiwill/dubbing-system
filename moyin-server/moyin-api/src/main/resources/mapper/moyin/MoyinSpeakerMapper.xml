@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinSpeakerMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinSpeaker" id="SpeakerResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="headerImage" column="header_image"/>
+        <result property="behavior" column="behavior"/>
+        <result property="gender" column="gender"/>
+        <result property="age" column="age"/>
+        <result property="styleCallName" column="style_call_name"/>
+        <result property="tags" column="tags"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectSpeakerVo">
+        select `id`,
+               `name`,
+               `header_image`,
+               `behavior`,
+               `gender`,
+               `age`,
+               `style_call_name`,
+               `tags`,
+               `status`
+        from moyin_speaker
+    </sql>
+
+    <sql id="selectDomainCount">
+        (select count(*) as `count`
+         from moyin_speaker_domain
+         where domain_id = #{domainIdSet}
+           and speaker_id = #{id})
+    </sql>
+
+    <select id="selectList" parameterType="MoyinSpeaker" resultMap="SpeakerResult">
+        <include refid="selectSpeakerVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat(#{name}, '%')</if>
+            <if test="gender != null  and gender != ''">and gender = #{gender}</if>
+            <if test="styleCallName != null  and styleCallName != ''">and style_call_name like concat(#{styleCallName},
+                '%')
+            </if>
+        </where>
+        order by id asc
+    </select>
+
+    <select id="selectById" parameterType="Long" resultMap="SpeakerResult">
+        <include refid="selectSpeakerVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectEmotionSet" resultType="java.lang.Long">
+        select distinct emotion_id
+        from moyin_speaker_emotion
+        where speaker_id = #{speakerId};
+    </select>
+
+    <select id="selectDomainSet" resultType="java.lang.Long">
+        select distinct domain_id
+        from moyin_speaker_domain
+        where speaker_id = #{speakerId};
+    </select>
+
+    <select id="selectLanguageSet" resultType="java.lang.Long">
+        select distinct language_id
+        from moyin_speaker_language
+        where speaker_id = #{speakerId};
+    </select>
+
+    <select id="selectEmotionName" resultType="java.lang.String">
+        select GROUP_CONCAT(m.emotion_name SEPARATOR ',') as emotion
+        from moyin_speaker_emotion s
+                 left join moyin_emotion m on m.id = s.emotion_id
+        where s.speaker_id = #{id};
+    </select>
+
+    <select id="selectDomainName" resultType="java.lang.String">
+        select GROUP_CONCAT(m.name SEPARATOR ',') as domain
+        from moyin_speaker_domain s
+                 left join moyin_domain m on m.id = s.domain_id
+        where s.speaker_id = #{id};
+    </select>
+
+    <select id="selectLanguageName" resultType="java.lang.String">
+        select GROUP_CONCAT(m.name SEPARATOR ',') as language
+        from moyin_speaker_language s
+                 left join moyin_language m on m.id = s.language_id
+        where s.speaker_id = #{id};
+    </select>
+
+    <select id="selectAliasName" resultType="java.lang.String">
+        select speaker_notes as alias
+        from moyin_member_collect_speaker
+        where speaker_id = #{speakerId}
+          and user_id = #{userId}
+    </select>
+
+    <select id="selectAliasById" resultType="java.lang.String">
+        select speaker_notes as alias
+        from moyin_member_collect_speaker
+        where user_id = #{userId}
+          and speaker_id = #{speakerId}
+    </select>
+
+
+    <resultMap id="justShowResultMap" type="com.moyin.tts.model.vo.MoyinSpeakerJustShowVo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="alias" property="alias"/>
+        <result column="header_image" property="headerImage"/>
+    </resultMap>
+
+    <select id="selectListJustShow" resultMap="justShowResultMap">
+        select s.id            as id,
+               s.name          as name,
+               s.header_image  as header_image,
+               c.speaker_notes as alias
+        from moyin_speaker s
+                 left join moyin_member_collect_speaker c
+                           on c.speaker_id = s.id and c.user_id = #{userId}
+    </select>
+
+    <select id="selectSpeakerListBySpeakerDataDTO" parameterType="com.moyin.tts.model.dto.SpeakerDataDTO"
+            resultMap="justShowResultMap">
+        SELECT s.id as id,
+        s.name as name,
+        s.header_image as header_image,
+        c.speaker_notes as alias
+        FROM moyin_speaker s
+        <if test="emotionId != null and emotionId != 0">
+            JOIN (SELECT speaker_id
+            FROM moyin_speaker_emotion
+            WHERE emotion_id = #{emotionId}) e
+            ON s.id = e.speaker_id
+        </if>
+        <if test="domainId != null and domainId != 0">
+            JOIN (SELECT speaker_id
+            FROM moyin_speaker_domain
+            WHERE domain_id = #{domainId}) d
+            ON s.id = d.speaker_id
+        </if>
+        <if test="languageId != null and languageId != 0">
+            JOIN (SELECT speaker_id
+            FROM moyin_speaker_language
+            WHERE language_id = #{languageId}) l
+            ON s.id = l.speaker_id
+        </if>
+        LEFT JOIN moyin_member_collect_speaker c ON s.id = c.speaker_id and c.user_id = #{userId}
+        <where>
+            s.status = 1
+            <if test="name != null and name != ''">
+                and s.name LIKE CONCAT('%', #{name}, '%') or c.speaker_notes LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        order by s.name desc
+    </select>
+
+    <select id="getCollectList" resultMap="justShowResultMap">
+        select s.id            as id,
+               s.name          as name,
+               s.header_image  as header_image,
+               c.speaker_notes as alias
+        from moyin_speaker s
+                 JOIN (SELECT speaker_id
+                       FROM moyin_member_collect_speaker
+                       WHERE user_id = #{userId}) e
+                      ON s.id = e.speaker_id
+                 LEFT JOIN moyin_member_collect_speaker c ON s.id = c.speaker_id and c.user_id = #{userId}
+    </select>
+
+
+    <resultMap id="EmotionDataResultMap" type="com.moyin.tts.model.vo.MoyinSpeakerEmotionVo">
+        <result property="speakerId" column="speaker_id"/>
+        <result property="emotionId" column="emotion_id"/>
+        <result property="name" column="name"/>
+        <result property="demo" column="demo"/>
+        <result property="demoUrl" column="demo_url"/>
+        <result property="styleCallName" column="style_call_name"/>
+    </resultMap>
+
+    <select id="getEmotionDataList" resultMap="EmotionDataResultMap">
+        select speaker_id, emotion_id, name, demo, demo_url, style_call_name
+        from moyin_speaker_emotion
+        where speaker_id = #{speakerId}
+    </select>
+
+    <select id="selectIsStar" resultType="Integer">
+        select count(*)
+        from moyin_member_collect_speaker
+        where speaker_id = #{speakerId}
+          and user_id = #{userId}
+    </select>
+
+    <insert id="insert" parameterType="com.moyin.tts.domain.MoyinSpeaker" useGeneratedKeys="true" keyProperty="id">
+        insert into moyin_speaker
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="headerImage != null">header_image,</if>
+            <if test="age != null">age,</if>
+            <if test="styleCallName != null">style_call_name,</if>
+            <if test="behavior != null">behavior,</if>
+            <if test="alias != null">alias,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="headerImage != null">#{headerImage},</if>
+            <if test="age != null">#{age},</if>
+            <if test="styleCallName != null">#{styleCallName},</if>
+            <if test="behavior != null">#{behavior},</if>
+            <if test="alias != null">#{alias},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertDomain">
+        insert into moyin_speaker_domain(speaker_id, domain_id)
+        values (#{speakerId}, #{domainId})
+    </insert>
+
+    <insert id="insertLanguage">
+        insert into moyin_speaker_language(speaker_id, language_id)
+        values (#{speakerId}, #{languageId})
+    </insert>
+
+    <insert id="insertEmotion">
+        insert into moyin_speaker_emotion(speaker_id, emotion_id)
+        values (#{speakerId}, #{emotionId})
+    </insert>
+
+    <insert id="insertAliasById">
+        insert into moyin_member_collect_speaker(user_id, speaker_id, speaker_notes)
+        values (#{userId}, #{speakerId}, #{alias})
+    </insert>
+
+
+    <update id="updateById" parameterType="com.moyin.tts.domain.MoyinSpeaker">
+        update moyin_speaker
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="headerImage != null">header_image = #{headerImage},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="styleCallName != null">style_call_name = #{styleCallName},</if>
+            <if test="behavior != null">behavior = #{behavior},</if>
+            <if test="alias != null">alias = #{alias},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateAliasById">
+        update moyin_member_collect_speaker
+        set speaker_notes = #{alias}
+        where user_id = #{userId}
+          and speaker_id = #{speakerId}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        delete
+        from moyin_speaker
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from moyin_speaker where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteDomain">
+        delete
+        from moyin_speaker_domain
+        where domain_id = #{domainId}
+          and speaker_id = #{speakerId};
+    </delete>
+    <delete id="deleteLanguage">
+        delete
+        from moyin_speaker_language
+        where language_id = #{languageId}
+          and speaker_id = #{speakerId};
+    </delete>
+    <delete id="deleteEmotion">
+        delete
+        from moyin_speaker_emotion
+        where emotion_id = #{emotionId}
+          and speaker_id = #{speakerId};
+    </delete>
+    <delete id="deleteAllEmotion">
+        delete
+        from moyin_speaker_emotion
+        where speaker_id = #{speakerId};
+    </delete>
+    <delete id="deleteAllLanguage">
+        delete
+        from moyin_speaker_language
+        where speaker_id = #{speakerId};
+    </delete>
+    <delete id="deleteAllDomain">
+        delete
+        from moyin_speaker_domain
+        where speaker_id = #{speakerId};
+    </delete>
+</mapper>

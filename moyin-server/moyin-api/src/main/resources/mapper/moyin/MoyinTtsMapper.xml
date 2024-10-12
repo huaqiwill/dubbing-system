@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinTtsMapper">
+
+    <select id="getLimitCount" resultType="java.lang.Integer">
+        select config_value
+        from sys_config
+        where config_key = 'moyin.ttsLimit'
+    </select>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinLexiconMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinLexicon" id="LexiconResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="describe" column="describe"/>
+        <result property="headerImage" column="header_image"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectLexiconVo">
+        select `id`, `name`, `describe`, `header_image`, `status`
+        from moyin_lexicon
+    </sql>
+
+    <select id="findById" parameterType="Long" resultMap="LexiconResult">
+        <include refid="selectLexiconVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="list" parameterType="MoyinLexicon" resultMap="LexiconResult">
+        <include refid="selectLexiconVo"/>
+        <where>
+            <if test="name != null and name != ''">and `name` like concat('%', #{name}, '%')</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
+
+    <insert id="insert">
+        insert into moyin_lexicon
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">`name`,</if>
+            <if test="describe != null">`describe`,</if>
+            <if test="status != null">`status`,</if>
+            <if test="headerImage != null">header_image,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="describe != null">#{describe},</if>
+            <if test="status != null">#{status},</if>
+            <if test="headerImage != null">#{headerImage},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        update moyin_lexicon
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">`name` = #{name},</if>
+            <if test="describe != null">`describe` = #{describe},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="headerImage != null">header_image = #{headerImage},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from moyin_lexicon
+        where id = #{id}
+    </delete>
+</mapper>

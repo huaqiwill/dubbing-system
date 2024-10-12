@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinAgeMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinAge" id="MoyinAgeResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="value" column="value"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectAgeVo">
+        select id, name, value, status, create_time, update_time
+        from moyin_age
+    </sql>
+
+    <select id="selectAgeList" parameterType="MoyinAge" resultMap="MoyinAgeResult">
+        <include refid="selectAgeVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectAgeById" parameterType="Long" resultMap="MoyinAgeResult">
+        <include refid="selectAgeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAge" parameterType="MoyinAge">
+        insert into moyin_age
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="value != null">value,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="value != null">#{value},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAge" parameterType="MoyinAge">
+        update moyin_age
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="value != null">`value` = #{value},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAgeById" parameterType="Long">
+        delete
+        from moyin_age
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteAgeByIds" parameterType="String">
+        delete from moyin_age where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

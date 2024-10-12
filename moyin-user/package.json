@@ -1,0 +1,111 @@
+{
+  "name": "@mekumiao/ssml-editor",
+  "version": "2.0.9",
+  "private": false,
+  "description": "基于wangeditor实现的支持SSML语法的编辑器",
+  "keywords": [
+    "SSML",
+    "editor",
+    "编辑器"
+  ],
+  "homepage": "https://github.com/mekumiao/ssml-editor/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mekumiao/ssml-editor.git"
+  },
+  "license": "Apache-2.0",
+  "author": "mekumiao <btguigushi@qq.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.umd.js"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --port 5793",
+    "build": "run-p type-check build-only",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "test": "exit 0",
+    "type-check": "vue-tsc --noEmit --composite false",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/ example/",
+    "deploy": "node deploy.js"
+  },
+  "dependencies": {
+    "@arco-design/web-vue": "^2.55.3",
+    "@element-plus/icons-vue": "^2.1.0",
+    "@highlightjs/vue-plugin": "^2.1.0",
+    "@popperjs/core": "^2.11.8",
+    "@types/lodash.debounce": "^4.0.8",
+    "@types/lodash.merge": "^4.6.7",
+    "@types/lodash.mergewith": "^4.6.7",
+    "@types/lodash.sorteduniqby": "^4.7.7",
+    "@types/lodash.throttle": "^4.1.7",
+    "@types/lodash.uniqby": "^4.7.7",
+    "@vueup/vue-quill": "^1.2.0",
+    "@vueuse/core": "^10.4.1",
+    "@wangeditor/editor": "^5.1.23",
+    "bootstrap": "^5.3.2",
+    "dayjs": "^1.11.10",
+    "element-plus": "^2.3.12",
+    "event-emitter": "^0.3.5",
+    "file-saver": "^2.0.5",
+    "font-awesome": "^4.7.0",
+    "highlight.js": "^11.9.0",
+    "js-base64": "^3.7.7",
+    "js-cookie": "^3.0.5",
+    "lodash.debounce": "^4.0.8",
+    "lodash.merge": "^4.6.2",
+    "lodash.mergewith": "^4.6.2",
+    "lodash.sorteduniqby": "^4.7.0",
+    "lodash.throttle": "^4.1.1",
+    "lodash.uniqby": "^4.7.0",
+    "pinia": "^2.1.6",
+    "pinyin-pro": "^3.16.4",
+    "pinyinize": "^3.3.1",
+    "snabbdom": "^3.5.1",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-svg-icons": "^2.0.1",
+    "vue": "3.4.12",
+    "vue-cropper": "^0.6.5",
+    "vue-router": "^4.4.0",
+    "xml-formatter": "^3.5.0",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.3.2",
+    "@tsconfig/node20": "^20.1.1",
+    "@types/file-saver": "^2.0.7",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20.5.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "@vue/eslint-config-typescript": "^11.0.3",
+    "@vue/tsconfig": "^0.4.0",
+    "axios": "^1.4.0",
+    "axios-mock-adapter": "^1.21.5",
+    "eslint": "^8.45.0",
+    "eslint-plugin-vue": "^9.15.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.0",
+    "sass": "^1.65.1",
+    "typescript": "~5.1.6",
+    "vite": "^4.4.6",
+    "vite-plugin-dts": "^3.5.3",
+    "vue-tsc": "^1.8.6"
+  }
+}

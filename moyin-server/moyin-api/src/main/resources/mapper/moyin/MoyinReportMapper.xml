@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinReportMapper">
+
+    <select id="getUserCount" resultType="java.lang.Integer">
+        select count(*)
+        from sys_user
+    </select>
+    <select id="getUserOnlineCount" resultType="java.lang.Integer">
+        select count(*)
+        from sys_user
+    </select>
+    <select id="getSpeakerCount" resultType="java.lang.Integer">
+        select count(*)
+        from moyin_speaker
+    </select>
+    <select id="getEmotionCount" resultType="java.lang.Integer">
+        select count(*)
+        from moyin_emotion
+    </select>
+    <select id="getTtsCount" resultType="java.lang.Integer">
+        select count(*)
+        from moyin_tts_record
+    </select>
+    <select id="getTtsTextCount" resultType="java.lang.Integer">
+        select sum(text_length)
+        from moyin_tts_record
+    </select>
+
+    <resultMap id="userTtsVo" type="com.moyin.tts.model.vo.UserTtsVo">
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+    </resultMap>
+
+    <select id="getUserList" resultMap="userTtsVo">
+        SELECT user_name, nick_name, user_id
+        FROM sys_user
+    </select>
+
+    <select id="getTodayTtsCountByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM moyin_tts_record
+        WHERE DATE(create_time) = CURDATE()
+          AND create_by = #{userName}
+    </select>
+
+    <select id="getMonthTtsCountByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM moyin_tts_record
+        WHERE MONTH(create_time) = MONTH(CURDATE())
+          AND YEAR(create_time) = YEAR(CURDATE())
+          AND create_by = #{userName}
+    </select>
+
+    <select id="getMonthTtsTextCountByUserId" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(text_length), 0)
+        FROM moyin_tts_record
+        WHERE MONTH(create_time) = MONTH(CURDATE())
+          AND YEAR(create_time) = YEAR(CURDATE())
+          AND create_by = #{userName}
+    </select>
+</mapper>

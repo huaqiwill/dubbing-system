@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinSensitiveWordMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinSensitiveWord" id="SensitiveWordResult">
+        <result property="id" column="id"/>
+        <result property="word" column="word"/>
+        <result property="lexiconId" column="lexicon_id"/>
+        <result property="lexiconName" column="lexicon_name"/>
+    </resultMap>
+
+    <sql id="selectSensitiveWordVo">
+        select s.id         as id,
+               s.word       as word,
+               s.lexicon_id as lexicon_id,
+               l.name       as lexicon_name
+        from moyin_sensitive_word s
+                 left join moyin_lexicon l on l.id = s.lexicon_id
+    </sql>
+
+    <select id="findSensitiveWordById" parameterType="Long" resultMap="SensitiveWordResult">
+        <include refid="selectSensitiveWordVo"/>
+        where s.id = #{id}
+    </select>
+
+    <select id="listSensitiveWord" parameterType="MoyinSensitiveWord" resultMap="SensitiveWordResult">
+        <include refid="selectSensitiveWordVo"/>
+        <where>
+            <if test="word != null and word != ''">and s.word like concat('%', #{word}, '%')</if>
+            <if test="lexiconId != null ">and s.lexicon_id = #{lexiconId}</if>
+        </where>
+    </select>
+
+
+    <select id="findSensitiveWordList" parameterType="String" resultType="com.moyin.tts.domain.MoyinSensitiveWord">
+        <include refid="selectSensitiveWordVo"/>
+        where s.word in
+        <foreach item="word" collection="list" open="(" separator="," close=")">
+            #{word}
+        </foreach>
+    </select>
+
+    <select id="selectAllSensitiveWord" resultType="MoyinSensitiveWord">
+        select id, word
+        from moyin_sensitive_word;
+    </select>
+
+    <insert id="insertSensitiveWord" parameterType="MoyinSensitiveWord">
+        insert into moyin_sensitive_word
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="word != null">word,</if>
+            <if test="lexiconId != null">lexicon_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="word != null">#{word},</if>
+            <if test="lexiconId != null">#{lexiconId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSensitiveWordById" parameterType="MoyinSensitiveWord">
+        update moyin_sensitive_word
+        <trim prefix="set" suffixOverrides=",">
+            <if test="word != null">word = #{word},</if>
+            <if test="lexiconId != null">lexicon_id = #{lexiconId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSensitiveWordById">
+        delete
+        from moyin_sensitive_word
+        where id = #{id}
+    </delete>
+</mapper>

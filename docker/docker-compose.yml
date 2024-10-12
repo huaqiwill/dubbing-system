@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "81:81"
+    depends_on:
+      - java-app
+
+  java-app:
+    build: ./java-app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:33061/moyin_spring
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=v=b7BD^8y]<w*[80-'_HUv%'TyO`C,SV
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=c;WPb>"(z.A[+cxea'UIsxF\wIO5FXYk
+    depends_on:
+      - mysql
+      - redis
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=c;WPb>"(z.A[+cxea'UIsxF\wIO5FXYk
+    volumes:
+      - redis-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "63791:6379"
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: v=b7BD^8y]<w*[80-'_HUv%'TyO`C,SV
+      MYSQL_DATABASE: moyin_spring
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - mysql-logs:/var/log/mysql
+      - mysql-bin:/var/lib/mysql-bin
+    ports:
+      - "33061:3306"
+
+volumes:
+  mysql-data:
+  mysql-logs:
+  mysql-bin:
+  redis-data:

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinTtsRecordMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinTtsRecord" id="moyinTtsRecordResult">
+        <result property="id" column="id"/>
+        <result property="speaker" column="speaker"/>
+        <result property="text" column="text"/>
+        <result property="ssml" column="ssml"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="textLength" column="text_length"/>
+    </resultMap>
+
+    <sql id="selectMoyinTtsRecordVo">
+        select id, speaker, text, ssml, create_time, create_by, text_length
+        from moyin_tts_record
+    </sql>
+
+    <select id="listRecord" resultMap="moyinTtsRecordResult">
+        <include refid="selectMoyinTtsRecordVo"/>
+        where create_by=#{createBy}
+        order by create_time desc
+    </select>
+
+    <select id="selectById" resultMap="moyinTtsRecordResult">
+        <include refid="selectMoyinTtsRecordVo"/>
+        where id=#{id}
+    </select>
+
+    <select id="ttsRecordListAll" resultMap="moyinTtsRecordResult">
+        <include refid="selectMoyinTtsRecordVo"/>
+        <where>
+            <if test="speaker">and `speaker` like concat('%',#{speaker},'%')</if>
+            <if test="createBy">and `create_by` like concat('%',#{createBy},'%')</if>
+            <if test="text">and `text` like concat('%',#{text},'%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insert">
+        insert into moyin_tts_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="speaker != null">speaker,</if>
+            <if test="text != null">text,</if>
+            <if test="ssml != null">ssml,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="speaker != null">#{speaker},</if>
+            <if test="text != null">#{text},</if>
+            <if test="ssml != null">#{ssml},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteById">
+        delete
+        from moyin_tts_record
+        where id = #{id};
+    </delete>
+</mapper>

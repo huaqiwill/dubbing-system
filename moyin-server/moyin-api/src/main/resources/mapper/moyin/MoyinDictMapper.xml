@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinDictMapper">
+
+    <resultMap type="MoyinDict" id="MoyinCategoryResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectMoyinCategoryVo">
+        select id, name, status, create_time, update_time
+        from moyin_category
+    </sql>
+
+    <select id="selectMoyinCategoryList" parameterType="MoyinDict" resultMap="MoyinCategoryResult">
+        <include refid="selectMoyinCategoryVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectMoyinCategoryById" parameterType="Long" resultMap="MoyinCategoryResult">
+        <include refid="selectMoyinCategoryVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="userNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select user_id as id, user_name as name
+        from sys_user
+    </select>
+
+    <select id="speakerNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select id, name
+        from moyin_speaker
+    </select>
+
+    <select id="lexiconNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select id, name
+        from moyin_lexicon
+    </select>
+    <select id="domainNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select id, name
+        from moyin_domain
+    </select>
+    <select id="languageNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select id, name
+        from moyin_language
+    </select>
+    <select id="emotionNameList" resultType="com.moyin.tts.model.vo.MoyinDictVo">
+        select id, emotion_name as name
+        from moyin_emotion
+    </select>
+
+    <resultMap id="EmotionVo" type="com.moyin.tts.model.vo.MoyinEmotionVo">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="value" column="value"/>
+    </resultMap>
+
+    <select id="emotionList" resultMap="EmotionVo">
+        select id, emotion_name as name, image_url, emotion_value as value
+        from moyin_emotion
+    </select>
+
+    <resultMap id="SpeakerEmotionVo" type="com.moyin.tts.model.vo.MoyinSpeakerEmotionVo">
+        <result property="speakerId" column="speaker_id"/>
+        <result property="emotionId" column="emotion_id"/>
+        <result property="name" column="name"/>
+        <result property="demo" column="demo"/>
+        <result property="demoUrl" column="demo_url"/>
+        <result property="styleCallName" column="style_call_name"/>
+    </resultMap>
+
+    <select id="getSpeakerEmotionList" resultMap="SpeakerEmotionVo">
+        select speaker_id, emotion_id, name, demo, demo_url, style_call_name
+        from moyin_speaker_emotion
+        where speaker_id = #{speakerId}
+    </select>
+
+    <select id="speakerList" resultType="com.moyin.tts.model.vo.MoyinSpeakerVo">
+
+    </select>
+
+    <insert id="insertMoyinCategory" parameterType="MoyinDict">
+        insert into moyin_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMoyinCategory" parameterType="MoyinDict">
+        update moyin_category
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMoyinCategoryById" parameterType="Long">
+        delete
+        from moyin_category
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteMoyinCategoryByIds" parameterType="String">
+        delete from moyin_category where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,16 @@
+#通过以下两行配置，忽略根目录和子模块的target文件夹编译文件
+docs
+reference
+**/node_modules/
+**/idea/
+**/.vscode/
+**/dist/
+**/dist.zip/
+**/bin/
+**/build/
+
+
+
+
+
+

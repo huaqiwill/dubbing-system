@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinLoginDeviceMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinLoginDevice" id="loginDeviceResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="ip" column="ip"/>
+        <result property="os" column="os"/>
+        <result property="browser" column="browser"/>
+        <result property="device" column="device"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="online" column="online"/>
+    </resultMap>
+
+    <sql id="selectLoginDeviceVo">
+        select id,
+               user_id,
+               user_name,
+               ip,
+               user_agent,
+               browser,
+               os,
+               device,
+               login_time,
+               online
+        from moyin_login_device
+    </sql>
+
+    <select id="selectById" resultMap="loginDeviceResult">
+        <include refid="selectLoginDeviceVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectList" resultMap="loginDeviceResult">
+        <include refid="selectLoginDeviceVo"/>
+        <where>
+            <if test="userName != null and userName != ''">and `user_name` like concat('%', #{userName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectByUserId" resultMap="loginDeviceResult">
+        <include refid="selectLoginDeviceVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insert">
+        insert into moyin_login_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="ip != null">ip,</if>
+            <if test="userAgent != null">user_agent,</if>
+            <if test="browser != null">browser,</if>
+            <if test="os != null">os,</if>
+            <if test="device != null">device,</if>
+            <if test="loginTime != null">login_time,</if>
+            <if test="online != null">`online`,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="ip != null">#{ip},</if>
+            <if test="userAgent != null">#{userAgent},</if>
+            <if test="browser != null">#{browser},</if>
+            <if test="os != null">#{os},</if>
+            <if test="device != null">#{device},</if>
+            <if test="loginTime != null">#{loginTime},</if>
+            <if test="online != null">#{online},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete">
+        delete
+        from moyin_login_device
+        where id = #{id}
+    </delete>
+</mapper>

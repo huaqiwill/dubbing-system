@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinAppKeyMapper">
+
+    <resultMap type="com.moyin.tts.domain.MoyinAppKey" id="moyinAppKeyResult">
+        <result property="id" column="id"/>
+        <result property="appKey" column="app_key"/>
+        <result property="appSecret" column="app_secret"/>
+        <result property="status" column="status"/>
+        <result property="notes" column="notes"/>
+    </resultMap>
+
+    <sql id="selectMoyinAppKeyVo">
+        select id, app_key, app_secret, status, notes
+        from moyin_app_key
+    </sql>
+
+    <select id="findAppKeyById" resultMap="moyinAppKeyResult">
+        <include refid="selectMoyinAppKeyVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="appKeyList" resultMap="moyinAppKeyResult">
+        <include refid="selectMoyinAppKeyVo"/>
+        <where>
+            <if test="notes != null  and notes != ''">and `notes` like concat('%', #{notes}, '%')</if>
+            <if test="status != null ">and `status` = #{status}</if>
+        </where>
+    </select>
+
+    <select id="getCurrentAppKey" resultMap="moyinAppKeyResult">
+        <include refid="selectMoyinAppKeyVo"/>
+        where status=1 limit 1;
+    </select>
+
+    <insert id="insertAppKey">
+        insert into moyin_app_key
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appKey != null">app_key,</if>
+            <if test="appSecret != null">app_secret,</if>
+            <if test="status != null">`status`,</if>
+            <if test="notes != null">`notes`,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appKey != null">#{appKey},</if>
+            <if test="appSecret != null">#{appSecret},</if>
+            <if test="status != null">#{status},</if>
+            <if test="notes != null">#{notes},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateAppKeyById" parameterType="com.moyin.tts.domain.MoyinAppKey">
+        update moyin_app_key
+        <trim prefix="set" suffixOverrides=",">
+            <if test="appKey != null">app_key = #{appKey},</if>
+            <if test="appSecret != null">app_secret = #{appSecret},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="notes != null">`notes` = #{notes},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAppKeyById" parameterType="Long">
+        delete
+        from moyin_app_key
+        where id = #{id}
+    </delete>
+
+    <update id="disableAllAppKey">
+        update moyin_app_key
+        set `status`=0
+        where `status` = 1;
+    </update>
+
+</mapper>

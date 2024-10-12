@@ -1,0 +1,32 @@
+.ssml-editor-root {
+  .clickable {
+    &:not(.disabled) {
+      cursor: pointer;
+    }
+
+    &:hover {
+      background-color: var(--tool-btn-hover-bg-color);
+    }
+  }
+
+  ol,
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  img {
+    pointer-events: none;
+  }
+
+  *,
+  *::after,
+  *::before {
+    box-sizing: border-box;
+  }
+}

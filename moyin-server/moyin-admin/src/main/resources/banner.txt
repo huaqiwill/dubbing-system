@@ -1,0 +1,2 @@
+Application Version: ${moyin.version}
+Spring Boot Version: ${spring-boot.version}

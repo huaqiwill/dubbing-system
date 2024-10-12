@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyin.tts.mapper.MoyinEmotionMapper">
+
+    <resultMap type="MoyinEmotion" id="emotionResult">
+        <result property="id" column="id"/>
+        <result property="emotionName" column="emotion_name"/>
+        <result property="emotionValue" column="emotion_value"/>
+        <result property="emotionStatus" column="emotion_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="displayOrder" column="display_order"/>
+    </resultMap>
+
+    <sql id="selectEmotionVo">
+        select id, emotion_name, emotion_value, emotion_status, image_url, display_order
+        from moyin_emotion
+    </sql>
+
+    <select id="selectList" parameterType="MoyinEmotion"
+            resultMap="emotionResult">
+        <include refid="selectEmotionVo"/>
+        <where>
+            <if test="emotionName != null and emotionName != ''">
+                and emotion_name like concat('%', #{emotionName},'%')
+            </if>
+            <if test="emotionValue != null and emotionValue != ''">
+                and emotion_value like concat('%', #{emotionValue},'%')
+            </if>
+            <if test="emotionStatus != null ">and status = #{emotionStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectById" parameterType="Long" resultMap="emotionResult">
+        <include refid="selectEmotionVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="MoyinEmotion">
+        insert into moyin_emotion
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="emotionName != null">emotion_name,</if>
+            <if test="emotionValue != null">emotion_value,</if>
+            <if test="emotionStatus != null">emotion_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="displayOrder != null">display_order,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="emotionName != null">#{emotionName},</if>
+            <if test="emotionValue != null">#{emotionValue},</if>
+            <if test="emotionStatus != null">#{emotionStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="displayOrder != null">#{displayOrder},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="MoyinEmotion">
+        update moyin_emotion
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="emotionName != null">emotion_name = #{emotionName},</if>
+            <if test="emotionValue != null">emotion_value = #{emotionValue},</if>
+            <if test="emotionStatus != null">emotion_status = #{emotionStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="displayOrder != null">display_order = #{displayOrder},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        delete
+        from moyin_emotion
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from moyin_emotion where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

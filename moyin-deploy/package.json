@@ -1,0 +1,20 @@
+{
+  "name": "deploy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "node compile.js && node deploy.js",
+    "push": "node deploy.js",
+    "build": "node compile.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "rimraf": "^6.0.1",
+    "ssh2": "^1.15.0",
+    "ssh2-sftp-client": "^10.0.3"
+  }
+}
